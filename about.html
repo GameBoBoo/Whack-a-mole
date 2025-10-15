@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHAC A MOLE - Home</title>
+    <link rel="stylesheet" href="about.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-whac">WHAC <span class="red-a">A</span> MOLE</span> 
+        </div>
+        <nav class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="#" class="active">About</a>
+            <a href="code.html">Code</a>
+            <a href="vidio.html">Video</a>
+            <a href="poster.html">Poster</a>
+        </nav>
+        <div class="member-link">
+            <a href="member.html">Member</a>
+        </div>
+    </header>
+
+    <main class="about">
+        <h1 class="about-title">ABOUT</h1>
+
+        <div class="text">
+            <p>
+                โครงการนี้เป็นการสร้างเกม Whac-A-Mole หรือ "เกมตีตัวตุ่น" ที่ผู้เล่นต้องตีตุ่นให้ทันเวลาที่มันโผล่ขึ้นมาในตำแหน่งต่าง ๆ 
+                โดยระบบถูกออกแบบให้ใช้ไมโครคอนโทรลเลอร์ Arduino เป็นหน่วยควบคุมหลัก เพื่อฝึกทักษะการเขียนโปรแกรมและการทำวงจร
+                ร่วมกับซอฟต์แวร์หรืออิเล็กทรอนิกส์
+            </p>
+            <br>
+            <p>
+                ตัวประกอบด้วย หลอด LED ที่ใช้แทนตัวตุ่น, ปุ่มกด (Push Button) สำหรับตี, Buzzer สำหรับเสียงเอฟเฟกต์ และ จอ 
+                LCD16x2 สำหรับแสดงคะแนนและเวลา ระบบจะสุ่มให้ LED ติดขึ้นมาในตำแหน่งต่าง ๆ โดยผู้เล่นต้องกดปุ่มที่ตรงกับหลอดไฟ
+                ที่ให้ทันเวลา หากกดถูกจะได้คะแนนเพิ่ม แต่หากกดผิดระบบจะส่งเสียงเตือนและไม่เพิ่มคะแนน เมื่อหมดเวลาเกมจะแสดง
+                คะแนนรวมให้ผู้เล่นทราบ
+            </p>
+        </div>
+
+        <div class="component">
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://makerstore.az/wp-content/uploads/2024/03/A001-2-Uno-R4-Wifi-4.jpg" alt="Arduino UNO R4 Wifi">
+                </div>
+                <p class="card-caption">Arduino UNO R4 Wifi</p>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://indomaker.com/wp-content/uploads/2022/07/led-scaled-e1658736493533-356x458.jpg" alt="LED 3mm">
+                </div>
+                <p class="card-caption">LED 3mm</p>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://www.twinschip.com/image/cache/catalog/Products%20Twins%20Chip%20Store%202020/330%20Ohm%20Resistor%20X%205%20Pieces/330%20Ohm%20Resistor%20-%20Twins%20Chip%201-550x550.jpg" alt="Resistor 330Ohm">
+                </div>
+                <p class="card-caption">Resistor 330Ohm</p>
+            </div>
+        </div>
+        <div class="component">
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://th.bing.com/th/id/OIP.q_rvirjuJ5Df9uMwyGIp9AHaHa?w=185&h=185&c=7&r=0&o=7&cb=12&pid=1.7&rm=3" alt="Resistor 330Ohm">
+                </div>
+                <p class="card-caption">Buzzer</p>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://m.media-amazon.com/images/I/61PgVPDfuPL._AC_SL1500_.jpg" alt="Resistor 330Ohm">
+                </div>
+                <p class="card-caption">LCD 16x2</p>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <img src="https://www.electronicscomp.com/image/cache/catalog/6x6x6mm-tactile-push-button-switch-pack-of-20-800x800.JPG" alt="Resistor 330Ohm">
+                </div>
+                <p class="card-caption">Push Button</p>
+            </div>
+        </div>
+        <div>
+            <h1 class="title-foot">สรุปการทำงานโดยรวม</h1>
+            <div class="text">
+                <p>
+                    เมื่อผู้เล่นเริ่มเกม ระบบจะสุ่มให้ LED ดวงใดดวงหนึ่งสว่างขึ้น (Output) เพื่อแสดงว่ามี “ตัวตุ่น” โผล่มา ผู้เล่นต้องกดปุ่มที่
+                    ตรงกับตำแหน่งนั้น(Input)ภายในเวลาที่กำหนดหากกดถูกระบบจะเล่นเสียงและเพิ่มคะแนน(Output)จากนั้นสุ่มตำแหน่งใหม่ให้เล่นต่อไปจนหมดเวลา เกมจะสรุปคะแนนสุดท้ายบนจอ LCD
+                </p>
+            </div>
+            <h1 class="title-foot">Library ที่ใช้งาน</h1>
+            <div class="text">
+                <p>
+                    LiquidCrystal_I2C.h <br>
+                    Wire.h
+                </p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
+
+</body>
+</html>
