@@ -29,107 +29,188 @@
         <h1 class="code-title">CODE</h1>
         <div class="text">
             <p>
-                #include &lt;Wire.h&gt; <br>
-                #include &lt;LiquidCrystal_I2C.h&gt; <br>
-
-                LiquidCrystal_I2C lcd(0x27, 16, 2); <br>
-
-                const int ONE_PIN = 6; <br>
-                const int TWO_PIN = 5; <br>
-                const int THREE_PIN = 4; <br>
-                const int FOUR_PIN = 3; <br>
-                const int FIVE_PIN = 2; <br>
-                    <br>
-                const int ONE_BTN = 12; <br>
-                const int TWO_BTN = 11; <br>
-                const int THREE_BTN = 10; <br>
-                const int FOUR_BTN = 9; <br>
-                const int FIVE_BTN = 8; <br>
-                    <br>
-                const int buzzerPin = 13; <br>
-                    <br>
-                bool is_led_on_one = true; <br>
-                bool is_led_on_two = true; <br>
-                bool is_led_on_three = true; <br>
-                bool is_led_on_four = true; <br>
-                bool is_led_on_five = true; <br>
-                    <br>
-                void setup() { <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(ONE_BTN, INPUT_PULLUP);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(TWO_BTN, INPUT_PULLUP);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(THREE_BTN, INPUT_PULLUP);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(FOUR_BTN, INPUT_PULLUP);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(FIVE_BTN, INPUT_PULLUP);<br>
-                        <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(ONE_PIN, OUTPUT);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(TWO_PIN, OUTPUT);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(THREE_PIN, OUTPUT);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(FOUR_PIN, OUTPUT);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;pinMode(FIVE_PIN, OUTPUT);<br>
-                        <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;lcd.init();<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;lcd.backlight();<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;lcd.print("hello, world!");<br>
-                    <br>
+                #include &lt;Wire.h&gt;<br>
+                #include &lt;LiquidCrystal_I2C.h&gt;<br>
+                <br>
+                LiquidCrystal_I2C lcd(0x27, 16, 2);<br>
+                <br>
+                // Pin Definitions<br>
+                const int buttonPins[] = {8, 9, 10, 11, 12};<br>
+                const int ledPins[] = {2, 3, 4, 5, 6};<br>
+                const int buzzerPin = 7;<br>
+                const int numMoles = 5;<br>
+                <br>
+                // Game variables<br>
+                int currentMole = -1;<br>
+                int score = 0;<br>
+                int highScore = 0;<br>
+                unsigned long reactionTime = 1000;<br>
+                unsigned long lastMoleTime = 0;<br>
+                unsigned long gameStartTime = 0;<br>
+                unsigned long gameDuration = 30000;<br>
+                bool gameActive = false;<br>
+                <br>
+                // Reaction time adjustment<br>
+                const unsigned long reactionTimeDecrement = 100;<br>
+                const unsigned long minReactionTime = 300;<br>
+                <br>
+                // ------------------ Setup ------------------<br>
+                void setup() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.init();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.backlight();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.begin(16, 2);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(2, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Whack-a-Mole");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;delay(2000);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < numMoles; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pinMode(buttonPins[i], INPUT_PULLUP);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pinMode(ledPins[i], OUTPUT);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(ledPins[i], LOW);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// Buzzer<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;pinMode(buzzerPin, OUTPUT);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(buzzerPin, HIGH); // ปิดเสียงตอนเริ่ม<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Serial.begin(9600);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;randomSeed(analogRead(0));<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Press Any Btn");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;lcd.print("to Start!");<br>
                 }<br>
                 <br>
-                void loop() { <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (digitalRead(ONE_BTN) == LOW) { //1<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is_led_on_one = !is_led_on_one;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tone(buzzerPin, 1000, 300);<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (digitalRead(TWO_BTN) == LOW) { //2<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is_led_on_two = !is_led_on_two;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
-                        <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}if (digitalRead(THREE_BTN) == LOW) { //3<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is_led_on_three = !is_led_on_three;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}if (digitalRead(FOUR_BTN) == LOW) { //4<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is_led_on_four = !is_led_on_four;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}if (digitalRead(FIVE_BTN) == LOW) { //5<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is_led_on_five = !is_led_on_five;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (is_led_on_one) { //1 <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(ONE_PIN, HIGH);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(ONE_PIN, LOW);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;delay(5);<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (is_led_on_two) { //2<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(TWO_PIN, HIGH);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(TWO_PIN, LOW);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;delay(5);<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (is_led_on_three) { //3<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(THREE_PIN, HIGH);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(THREE_PIN, LOW);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;delay(5);<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (is_led_on_four) { //4<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(FOUR_PIN, HIGH);<br>
-                    &nbsp;} else {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(FOUR_PIN, LOW);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;delay(5);<br>
-                    <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;if (is_led_on_five) { //5<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(FIVE_PIN, HIGH);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(FIVE_PIN, LOW);<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;delay(5);<br>
-                    <br>
+                // ------------------ Loop ------------------<br>
+                void loop() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;unsigned long currentMillis = millis();<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// ---------- WAITING STATE ----------<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (!gameActive) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < numMoles; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (digitalRead(buttonPins[i]) == LOW) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gameActive = true;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;score = 0;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currentMole = -1;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reactionTime = 1000;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(3, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("GAME START!");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(1000); // ไม่มีเสียงตอนเริ่ม<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gameStartTime = millis();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lastMoleTime = millis();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// ---------- ACTIVE GAME STATE ----------<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;unsigned long elapsedTime = currentMillis - gameStartTime;<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (elapsedTime <= gameDuration) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Progress bar<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int barLength = map(gameDuration - elapsedTime, 0, gameDuration, 0, 16);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < 16; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(i < barLength ? '-' : ' ');<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Countdown Timer<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int timeLeft = (gameDuration - elapsedTime) / 1000;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(10, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(timeLeft < 10) lcd.print(" ");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(timeLeft);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("s");<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// สุ่ม LED (mole)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (currentMillis - lastMoleTime >= reactionTime) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (currentMole != -1) digitalWrite(ledPins[currentMole], LOW);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currentMole = random(0, numMoles);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(ledPins[currentMole], HIGH);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lastMoleTime = currentMillis;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// ตรวจปุ่ม<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < numMoles; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (digitalRead(buttonPins[i]) == LOW) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i == currentMole) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;score++;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(2, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Score:        ");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(9, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(score);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;beep(2, 80); // เสียงถูก<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (reactionTime > minReactionTime) reactionTime -= reactionTimeDecrement;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;score--;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(2, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Score:        ");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(9, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(score);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;beep(1, 250); // เสียงผิด<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (currentMole != -1) digitalWrite(ledPins[currentMole], LOW);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currentMole = -1;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(300);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// ---------- END GAME STATE ----------<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;if (elapsedTime >= gameDuration) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(3, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Game Over!");          // แสดง Game Over<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Final Score: ");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(13, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(score);<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// เอฟเฟกต์จบเกม<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < 3; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int j = 0; j < numMoles; j++) digitalWrite(ledPins[j], HIGH);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;beep(2, 200);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(300);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int j = 0; j < numMoles; j++) digitalWrite(ledPins[j], LOW);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(300);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(2000); // รอสักพักก่อนโชว์ High Score<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// อัปเดต High Score และแสดง<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (score > highScore) highScore = score;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("High Score:");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(13, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(highScore);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Score: ");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print(score);<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(3000); // แสดง High Score 3 วินาที<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.clear();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 0);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("Press Any Btn");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.setCursor(0, 1);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lcd.print("to Restart");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gameActive = false;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                }<br>
+                <br>
+                // ------------------ ฟังก์ชันเสียง ------------------<br>
+                void beep(int times, int duration) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < times; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(buzzerPin, LOW);    // เปิดเสียง<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(duration);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(buzzerPin, HIGH);   // ปิดเสียง<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay(100);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
                 }
             </p>
         </div>
