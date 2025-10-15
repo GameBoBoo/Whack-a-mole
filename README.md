@@ -18,4 +18,4 @@ https://youtu.be/0D7mWDLBg3k?si=xE0hmJ_sBUVR1aUC
 
 
 ## Project Poster
-![Whack A Mole]()
+![Whack A Mole](A1.png)
