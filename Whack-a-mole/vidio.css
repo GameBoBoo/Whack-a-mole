@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif; 
+    color: #fff;
+}
+
+body {
+    background-color: #1a1a1a;
+    background-size: 2px 2px; 
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center ;
+    padding: 20px 80px;
+    font-weight: 600;
+}
+
+.logo {
+    font-size: 24px;
+}
+
+.logo-whac {
+    color: #fff;
+    font-weight: 700;
+}
+
+.nav-links a {
+    margin: 0 15px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.nav-links a.active {
+    color: #fff;
+    font-weight: 600;
+}
+
+.member-link a {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.red-a {
+    color: #ff4d4d;
+    font-size: larger;
+}
+
+.vdo {
+    width: 70%;
+    height: auto;
+    margin-left: 15%;
+}
