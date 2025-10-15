@@ -16,3 +16,6 @@ https://gameboboo.github.io/Whack-a-mole/
 ## Project Demo Video
 https://youtu.be/0D7mWDLBg3k?si=xE0hmJ_sBUVR1aUC
 
+
+## Project Poster
+![Whack A Mole]()
