@@ -64,6 +64,20 @@ a {
     max-width: 50%;
 }
 
+.content-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 50%;
+}
+
+.game-image {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); 
+}
+
 .game-text {
     font-size: 48px;
     font-weight: 300;
